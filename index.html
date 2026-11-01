@@ -269,44 +269,72 @@
       margin-left: 12px;
     }
 
-    /* Futuristic Floating Glass Scrollbar */
+    /* Futuristic Floating Glass Scrollbar Container */
+    .scroll-viewport {
+      position: relative;
+      margin-bottom: 22px;
+    }
+
     .links-grid {
       display: flex;
       flex-direction: column;
       gap: 10px;
       max-height: 290px;
       overflow-y: scroll;
-      margin-bottom: 22px;
-      padding-right: 6px;
+      padding-right: 18px; /* space so floating thumb hovers cleanly */
       padding-left: 2px;
       padding-top: 4px;
       padding-bottom: 4px;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(6, 182, 212, 0.45) transparent;
+      scrollbar-width: none; /* Hide default native bar */
+      -ms-overflow-style: none;
     }
 
-    /* Floating WebKit Scrollbar Styling */
     .links-grid::-webkit-scrollbar {
-      width: 6px;
+      display: none; /* Hide default native chrome/safari/edge bar */
+      width: 0;
+      height: 0;
     }
 
-    .links-grid::-webkit-scrollbar-track {
-      background: transparent;
-      margin: 6px 0;
-    }
-
-    .links-grid::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, rgba(56, 189, 248, 0.7), rgba(6, 182, 212, 0.5) 75%, rgba(99, 102, 241, 0.6));
+    /* Floating Futuristic Glass Track */
+    .floating-scroll-track {
+      position: absolute;
+      right: 2px;
+      top: 8px;
+      bottom: 8px;
+      width: 4px;
       border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-      transition: background 0.2s, box-shadow 0.2s;
+      background: rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      user-select: none;
+      z-index: 20;
+      transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease;
     }
 
-    .links-grid::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(180deg, #38bdf8, #06b6d4 75%, #818cf8);
-      border-color: rgba(255, 255, 255, 0.3);
-      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.45);
+    .floating-scroll-track:hover,
+    .floating-scroll-track.active {
+      width: 6px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Floating Capsule Pill Thumb */
+    .floating-scroll-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #38bdf8 0%, #06b6d4 55%, #6366f1 100%);
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+      cursor: grab;
+      transition: background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .floating-scroll-thumb:hover,
+    .floating-scroll-thumb.active {
+      cursor: grabbing;
+      background: linear-gradient(180deg, #7dd3fc 0%, #22d3ee 55%, #818cf8 100%);
+      box-shadow: 0 0 14px rgba(6, 182, 212, 0.7);
     }
 
     .link-card {
@@ -561,7 +589,8 @@
       <div class="section-header">Endpoints & Socials</div>
 
       <!-- Links Grid with Futuristic Floating Scrollbar -->
-      <div class="links-grid" id="linksGrid">
+      <div class="scroll-viewport" id="scrollViewport">
+        <div class="links-grid" id="linksGrid">
         
         <!-- GitHub (Official Octocat Simple-Icon) -->
         <a href="https://github.com/dev-vasu" class="link-card" target="_blank" rel="noopener noreferrer">
@@ -689,6 +718,12 @@
           </div>
         </a>
 
+        </div>
+
+        <!-- Floating Glass Capsule Scrollbar -->
+        <div class="floating-scroll-track" id="floatingTrack" title="Scroll">
+          <div class="floating-scroll-thumb" id="floatingThumb"></div>
+        </div>
       </div>
 
       <!-- Action Buttons -->
@@ -776,6 +811,74 @@
       requestAnimationFrame(animate);
     }
     animate();
+
+    // Floating Glass Scrollbar Logic
+    const linksGrid = document.getElementById('linksGrid');
+    const floatingTrack = document.getElementById('floatingTrack');
+    const floatingThumb = document.getElementById('floatingThumb');
+
+    function syncFloatingScroll() {
+      const maxScroll = linksGrid.scrollHeight - linksGrid.clientHeight;
+      if (maxScroll <= 0) {
+        floatingTrack.style.display = 'none';
+        return;
+      }
+      floatingTrack.style.display = 'block';
+      const trackHeight = floatingTrack.clientHeight;
+      const thumbHeight = Math.max(42, (linksGrid.clientHeight / linksGrid.scrollHeight) * trackHeight);
+      floatingThumb.style.height = `${thumbHeight}px`;
+
+      const scrollFraction = linksGrid.scrollTop / maxScroll;
+      const topOffset = scrollFraction * (trackHeight - thumbHeight);
+      floatingThumb.style.top = `${topOffset}px`;
+    }
+
+    linksGrid.addEventListener('scroll', syncFloatingScroll);
+    window.addEventListener('resize', syncFloatingScroll);
+    setTimeout(syncFloatingScroll, 100);
+
+    // Click track to jump
+    floatingTrack.addEventListener('click', (e) => {
+      if (e.target === floatingThumb) return;
+      const rect = floatingTrack.getBoundingClientRect();
+      const clickY = e.clientY - rect.top;
+      const trackAvailable = rect.height - floatingThumb.clientHeight;
+      const pct = Math.max(0, Math.min(1, clickY / trackAvailable));
+      const maxScroll = linksGrid.scrollHeight - linksGrid.clientHeight;
+      linksGrid.scrollTo({ top: pct * maxScroll, behavior: 'smooth' });
+    });
+
+    // Drag floating thumb
+    let isDragging = false;
+    let startY = 0;
+    let startScrollTop = 0;
+
+    floatingThumb.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startY = e.clientY;
+      startScrollTop = linksGrid.scrollTop;
+      floatingThumb.classList.add('active');
+      floatingTrack.classList.add('active');
+      document.body.style.userSelect = 'none';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const deltaY = e.clientY - startY;
+      const trackAvailable = floatingTrack.clientHeight - floatingThumb.clientHeight;
+      const maxScroll = linksGrid.scrollHeight - linksGrid.clientHeight;
+      const scrollDelta = (deltaY / trackAvailable) * maxScroll;
+      linksGrid.scrollTop = startScrollTop + scrollDelta;
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        floatingThumb.classList.remove('active');
+        floatingTrack.classList.remove('active');
+        document.body.style.userSelect = '';
+      }
+    });
 
     // 3D Card Tilt Effect
     const container = document.getElementById('tiltContainer');
