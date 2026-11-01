@@ -269,72 +269,132 @@
       margin-left: 12px;
     }
 
-    /* Futuristic Floating Glass Scrollbar Container */
+    /* ═══════════════════════════════════════════════════
+       FakeScroll-Inspired Cyber Floating Scrollbar System
+       ═══════════════════════════════════════════════════ */
+
+    /* Outer scope — overflow visible so track can float outside */
     .scroll-viewport {
       position: relative;
+      overflow: visible;
       margin-bottom: 22px;
     }
 
+    /* Inner clip mask — clips content, holds fade overlays */
+    .scroll-wrap {
+      overflow: hidden;
+      height: 290px;
+      position: relative;
+      z-index: 1;
+      border-radius: 14px;
+    }
+
+    /* Top & bottom edge-fade cues (fakescroll inspired) */
+    .scroll-wrap::before,
+    .scroll-wrap::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 28px;
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .scroll-wrap::before {
+      top: 0;
+      background: linear-gradient(to bottom, rgba(11, 15, 25, 0.9) 0%, transparent 100%);
+    }
+
+    .scroll-wrap::after {
+      bottom: 0;
+      background: linear-gradient(to top, rgba(11, 15, 25, 0.9) 0%, transparent 100%);
+    }
+
+    .scroll-wrap.fade-top::before { opacity: 1; }
+    .scroll-wrap.fade-bottom::after { opacity: 1; }
+
+    /* Scrollable content pane — native bar completely hidden */
     .links-grid {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      max-height: 290px;
-      overflow-y: scroll;
-      padding-right: 18px; /* space so floating thumb hovers cleanly */
-      padding-left: 2px;
-      padding-top: 4px;
-      padding-bottom: 4px;
-      scrollbar-width: none; /* Hide default native bar */
+      height: 100%;
+      width: 100%;
+      position: relative;
+      overflow: auto;
+      padding: 4px 2px 4px 2px;
+      scrollbar-width: none;
       -ms-overflow-style: none;
     }
 
     .links-grid::-webkit-scrollbar {
-      display: none; /* Hide default native chrome/safari/edge bar */
+      display: none;
       width: 0;
       height: 0;
     }
 
-    /* Floating Futuristic Glass Track */
-    .floating-scroll-track {
+    /* ─── Track (positioned outside the clip, floating on right edge) ─── */
+    .fs-track {
       position: absolute;
-      right: 2px;
-      top: 8px;
-      bottom: 8px;
-      width: 4px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.05);
+      right: -14px;
+      top: 10%;
+      bottom: 10%;
+      width: 5px;
       cursor: pointer;
-      user-select: none;
       z-index: 20;
-      transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease;
+      border-radius: 20px 0 0 20px;
+      padding: 6px 0;
+      opacity: 0;
+      transition: opacity 0.25s ease, width 0.15s ease, background 0.15s ease;
     }
 
-    .floating-scroll-track:hover,
-    .floating-scroll-track.active {
-      width: 6px;
-      background: rgba(255, 255, 255, 0.1);
+    /* Show track on viewport hover or while dragging */
+    .scroll-viewport:hover .fs-track,
+    .scroll-viewport.fs--scrolling .fs-track,
+    .fs-track.fs--grabbed {
+      opacity: 1;
     }
 
-    /* Floating Capsule Pill Thumb */
-    .floating-scroll-thumb {
-      position: absolute;
-      top: 0;
-      left: 0;
+    .fs-track:hover {
+      width: 8px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* ─── Bar / Thumb ─── */
+    .fs-bar {
+      position: relative;
       width: 100%;
-      height: 50px;
-      border-radius: 999px;
-      background: linear-gradient(180deg, #38bdf8 0%, #06b6d4 55%, #6366f1 100%);
-      box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+      border-radius: 4px;
+      right: 0;
+      top: 0;
+      z-index: 0;
       cursor: grab;
-      transition: background 0.2s ease, box-shadow 0.2s ease;
+      transition: background 0.12s, box-shadow 0.12s;
+
+      /* Glass cyber gradient */
+      background: rgba(6, 182, 212, 0.55);
+      box-shadow: 0 0 8px rgba(6, 182, 212, 0.3);
     }
 
-    .floating-scroll-thumb:hover,
-    .floating-scroll-thumb.active {
+    .fs-bar:hover {
+      background: rgba(34, 211, 238, 0.7);
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.5);
+    }
+
+    .fs-bar.fs--grabbed {
       cursor: grabbing;
-      background: linear-gradient(180deg, #7dd3fc 0%, #22d3ee 55%, #818cf8 100%);
-      box-shadow: 0 0 14px rgba(6, 182, 212, 0.7);
+      background: rgba(129, 140, 248, 0.85);
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.6);
+    }
+
+    /* Body-level grabbed state for global cursor */
+    body.fs--grabbed {
+      cursor: grabbing !important;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .link-card {
@@ -588,9 +648,10 @@
       <!-- Links Grid -->
       <div class="section-header">Endpoints & Socials</div>
 
-      <!-- Links Grid with Futuristic Floating Scrollbar -->
+      <!-- FakeScroll-Inspired Cyber Scroll System -->
       <div class="scroll-viewport" id="scrollViewport">
-        <div class="links-grid" id="linksGrid">
+        <div class="scroll-wrap" id="scrollWrap">
+          <div class="links-grid" id="linksGrid">
         
         <!-- GitHub (Official Octocat Simple-Icon) -->
         <a href="https://github.com/dev-vasu" class="link-card" target="_blank" rel="noopener noreferrer">
@@ -718,11 +779,12 @@
           </div>
         </a>
 
+          </div>
         </div>
 
-        <!-- Floating Glass Capsule Scrollbar -->
-        <div class="floating-scroll-track" id="floatingTrack" title="Scroll">
-          <div class="floating-scroll-thumb" id="floatingThumb"></div>
+        <!-- FakeScroll-inspired floating Track + Bar -->
+        <div class="fs-track" id="fsTrack">
+          <div class="fs-bar" id="fsBar"></div>
         </div>
       </div>
 
@@ -812,73 +874,131 @@
     }
     animate();
 
-    // Floating Glass Scrollbar Logic
-    const linksGrid = document.getElementById('linksGrid');
-    const floatingTrack = document.getElementById('floatingTrack');
-    const floatingThumb = document.getElementById('floatingThumb');
+    // ═══════════════════════════════════════════════
+    // FakeScroll-Inspired Cyber Scroll System
+    // ═══════════════════════════════════════════════
+    const linksGrid   = document.getElementById('linksGrid');
+    const scrollWrap  = document.getElementById('scrollWrap');
+    const scrollVP    = document.getElementById('scrollViewport');
+    const fsTrack     = document.getElementById('fsTrack');
+    const fsBar       = document.getElementById('fsBar');
 
-    function syncFloatingScroll() {
-      const maxScroll = linksGrid.scrollHeight - linksGrid.clientHeight;
-      if (maxScroll <= 0) {
-        floatingTrack.style.display = 'none';
+    const raf = window.requestAnimationFrame || (cb => setTimeout(cb, 1000 / 60));
+
+    let fsState = {
+      ratio: 0,
+      drag: false,
+      lastPageY: 0,
+      trackBounds: null,
+      scrollTimer: null
+    };
+
+    // ─── Move bar position (rAF-driven, like fakescroll) ───
+    function moveBar() {
+      const scrollHeight = linksGrid.scrollHeight;
+      const ownHeight    = linksGrid.clientHeight;
+
+      if (scrollHeight <= ownHeight) {
+        fsTrack.style.display = 'none';
         return;
       }
-      floatingTrack.style.display = 'block';
-      const trackHeight = floatingTrack.clientHeight;
-      const thumbHeight = Math.max(42, (linksGrid.clientHeight / linksGrid.scrollHeight) * trackHeight);
-      floatingThumb.style.height = `${thumbHeight}px`;
+      fsTrack.style.display = '';
 
-      const scrollFraction = linksGrid.scrollTop / maxScroll;
-      const topOffset = scrollFraction * (trackHeight - thumbHeight);
-      floatingThumb.style.top = `${topOffset}px`;
+      fsState.ratio = fsTrack.clientHeight / scrollHeight;
+
+      raf(() => {
+        const heightPct = (ownHeight / scrollHeight) * 100;
+        const topPct    = (linksGrid.scrollTop / scrollHeight) * 100;
+        fsBar.style.height  = heightPct + '%';
+        fsBar.style.top     = topPct + '%';
+        fsBar.style.display = scrollHeight <= ownHeight ? 'none' : '';
+      });
     }
 
-    linksGrid.addEventListener('scroll', syncFloatingScroll);
-    window.addEventListener('resize', syncFloatingScroll);
-    setTimeout(syncFloatingScroll, 100);
+    // ─── Edge fade cues ───
+    function updateFades() {
+      const top    = linksGrid.scrollTop;
+      const max    = linksGrid.scrollHeight - linksGrid.clientHeight;
+      scrollWrap.classList.toggle('fade-top', top > 8);
+      scrollWrap.classList.toggle('fade-bottom', top < max - 8);
+    }
 
-    // Click track to jump
-    floatingTrack.addEventListener('click', (e) => {
-      if (e.target === floatingThumb) return;
-      const rect = floatingTrack.getBoundingClientRect();
-      const clickY = e.clientY - rect.top;
-      const trackAvailable = rect.height - floatingThumb.clientHeight;
-      const pct = Math.max(0, Math.min(1, clickY / trackAvailable));
-      const maxScroll = linksGrid.scrollHeight - linksGrid.clientHeight;
-      linksGrid.scrollTo({ top: pct * maxScroll, behavior: 'smooth' });
+    // ─── Scroll flash (auto-show track briefly while scrolling) ───
+    function onScroll() {
+      moveBar();
+      updateFades();
+
+      scrollVP.classList.add('fs--scrolling');
+      clearTimeout(fsState.scrollTimer);
+      fsState.scrollTimer = setTimeout(() => {
+        scrollVP.classList.remove('fs--scrolling');
+      }, 1200);
+    }
+
+    linksGrid.addEventListener('scroll', onScroll);
+    window.addEventListener('resize', () => { moveBar(); updateFades(); });
+    setTimeout(() => { moveBar(); updateFades(); }, 80);
+
+    // ─── Track bounds caching (debounced like fakescroll) ───
+    function getTrackBounds() {
+      fsState.trackBounds = fsTrack.getBoundingClientRect();
+    }
+
+    // ─── Track click → jump to position (smooth) ───
+    fsTrack.addEventListener('click', (e) => {
+      if (fsState.drag) return;
+      if (e.target === fsBar) return;
+
+      getTrackBounds();
+      const bounds = fsState.trackBounds;
+      const pct    = (e.clientY - bounds.top) / bounds.height;
+      const target = pct * (linksGrid.scrollHeight - linksGrid.clientHeight);
+
+      linksGrid.scrollTo({ top: target, behavior: 'smooth' });
     });
 
-    // Drag floating thumb
-    let isDragging = false;
-    let startY = 0;
-    let startScrollTop = 0;
+    // ─── Bar mousedown → start drag ───
+    fsBar.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      fsState.drag     = linksGrid.scrollTop;
+      fsState.lastPageY = e.pageY;
 
-    floatingThumb.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      startY = e.clientY;
-      startScrollTop = linksGrid.scrollTop;
-      floatingThumb.classList.add('active');
-      floatingTrack.classList.add('active');
-      document.body.style.userSelect = 'none';
+      fsBar.classList.add('fs--grabbed');
+      document.body.classList.add('fs--grabbed');
+      getTrackBounds();
+
+      document.addEventListener('mousemove', onDrag);
+      document.addEventListener('mouseup', onStopDrag);
     });
 
-    window.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
-      const deltaY = e.clientY - startY;
-      const trackAvailable = floatingTrack.clientHeight - floatingThumb.clientHeight;
-      const maxScroll = linksGrid.scrollHeight - linksGrid.clientHeight;
-      const scrollDelta = (deltaY / trackAvailable) * maxScroll;
-      linksGrid.scrollTop = startScrollTop + scrollDelta;
-    });
+    // ─── Drag handler (rAF-driven, bound-checked like fakescroll) ───
+    function onDrag(e) {
+      const delta = e.pageY - fsState.lastPageY;
 
-    window.addEventListener('mouseup', () => {
-      if (isDragging) {
-        isDragging = false;
-        floatingThumb.classList.remove('active');
-        floatingTrack.classList.remove('active');
-        document.body.style.userSelect = '';
-      }
-    });
+      raf(() => {
+        const bounds = fsState.trackBounds;
+        const sTop   = document.documentElement.scrollTop;
+        const withinBounds = e.pageY >= (bounds.top + sTop) &&
+                             e.pageY <= (bounds.bottom + sTop);
+
+        if (withinBounds) {
+          linksGrid.scrollTop = fsState.drag + delta / fsState.ratio;
+        } else {
+          // Re-anchor when pointer escapes track bounds
+          fsState.drag     = linksGrid.scrollTop;
+          fsState.lastPageY = e.pageY;
+        }
+      });
+    }
+
+    // ─── Stop drag ───
+    function onStopDrag() {
+      fsBar.classList.remove('fs--grabbed');
+      document.body.classList.remove('fs--grabbed');
+      document.removeEventListener('mousemove', onDrag);
+      document.removeEventListener('mouseup', onStopDrag);
+      setTimeout(() => { fsState.drag = false; });
+    }
 
     // 3D Card Tilt Effect
     const container = document.getElementById('tiltContainer');
