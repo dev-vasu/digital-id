@@ -10,3 +10,6 @@ Interactive 3D WebGL physics portfolio of Vasudev Singh Jamwal, featuring custom
 ## Core Modules
 - `CanvasParticles`: Self-contained WebGL point cloud shader with smooth radial displacement.
 - `FakeScrollDriver`: Direct DOM manipulation decoupling native browser scrolling from canvas render loop.
+
+## Browser Compatibility Matrix
+Tested and verified across Safari 15+, Chromium 90+, and Firefox 88+ on desktop, iOS, and Android viewports.
