@@ -269,45 +269,107 @@
       margin-left: 12px;
     }
 
+    /* Futuristic Cyber HUD Scroll System */
+    .scroll-viewport {
+      position: relative;
+      display: flex;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
     .links-grid {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-bottom: 22px;
       max-height: 290px;
-      overflow-y: auto;
-      padding-right: 12px;
+      overflow-y: scroll;
+      flex: 1;
+      padding-right: 4px;
       padding-left: 2px;
       padding-top: 4px;
       padding-bottom: 4px;
-      scrollbar-width: thin;
-      scrollbar-color: #06b6d4 rgba(6, 182, 212, 0.05);
+      scrollbar-width: none; /* Hide default browser bar */
     }
 
-    /* Sci-Fi Neon Cyber Scrollbar */
     .links-grid::-webkit-scrollbar {
-      width: 7px;
+      display: none; /* Hide default chrome/safari bar */
     }
 
-    .links-grid::-webkit-scrollbar-track {
-      background: rgba(6, 182, 212, 0.04);
-      border: 1px solid rgba(6, 182, 212, 0.15);
+    /* Custom Futuristic HUD Rail & Thumb */
+    .hud-rail {
+      width: 14px;
+      background: rgba(6, 182, 212, 0.03);
+      border: 1px solid rgba(6, 182, 212, 0.25);
       border-radius: 20px;
-      margin: 4px 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3px 0;
+      box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.05);
+      cursor: pointer;
+      user-select: none;
     }
 
-    .links-grid::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 0 12px rgba(6, 182, 212, 0.8), 0 0 20px rgba(59, 130, 246, 0.5);
-      transition: all 0.3s ease;
+    /* Top and bottom sensor nodes */
+    .hud-rail::before, .hud-rail::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(6, 182, 212, 0.5);
+      box-shadow: 0 0 6px rgba(6, 182, 212, 0.8);
+      position: absolute;
+    }
+    .hud-rail::before { top: 4px; }
+    .hud-rail::after { bottom: 4px; }
+
+    /* Laser Track Line inside */
+    .rail-laser {
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      width: 1px;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(6, 182, 212, 0.6) 0px,
+        rgba(6, 182, 212, 0.6) 4px,
+        transparent 4px,
+        transparent 8px
+      );
     }
 
-    .links-grid::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(180deg, #22d3ee 0%, #60a5fa 50%, #a855f7 100%);
-      box-shadow: 0 0 16px rgba(6, 182, 212, 1), 0 0 28px rgba(139, 92, 246, 0.9);
-      border-color: #ffffff;
+    /* Sci-Fi Energy Slider / Thumb */
+    .hud-slider {
+      position: absolute;
+      top: 14px;
+      width: 8px;
+      height: 55px;
+      background: linear-gradient(180deg, #22d3ee, #06b6d4, #8b5cf6);
+      border-radius: 10px;
+      border: 1px solid #ffffff;
+      box-shadow: 
+        0 0 14px #06b6d4,
+        0 0 25px rgba(6, 182, 212, 0.8),
+        inset 0 0 4px #ffffff;
+      cursor: grab;
+      transition: box-shadow 0.2s, background 0.2s;
+    }
+
+    .hud-slider:hover, .hud-slider.active {
+      box-shadow: 
+        0 0 20px #22d3ee,
+        0 0 35px #06b6d4,
+        inset 0 0 6px #ffffff;
+      cursor: grabbing;
+    }
+
+    /* Indicator Badge next to HUD Rail */
+    .scroll-pct {
+      font-family: var(--font-code);
+      font-size: 10px;
+      color: var(--neon-cyan);
+      letter-spacing: 0.5px;
     }
 
     .link-card {
@@ -561,7 +623,9 @@
       <!-- Links Grid -->
       <div class="section-header">Endpoints & Socials</div>
 
-      <div class="links-grid">
+      <!-- Links Grid with Futuristic HUD Scroll Rail -->
+      <div class="scroll-viewport">
+        <div class="links-grid" id="linksGrid">
         
         <!-- GitHub (Official Octocat Simple-Icon) -->
         <a href="https://github.com/dev-vasu" class="link-card" target="_blank" rel="noopener noreferrer">
@@ -689,6 +753,13 @@
           </div>
         </a>
 
+        </div>
+
+        <!-- Cyber HUD Rail on the Right -->
+        <div class="hud-rail" id="hudRail" title="Scroll Rail">
+          <div class="rail-laser"></div>
+          <div class="hud-slider" id="hudSlider"></div>
+        </div>
       </div>
 
       <!-- Action Buttons -->
@@ -776,6 +847,72 @@
       requestAnimationFrame(animate);
     }
     animate();
+
+    // Futuristic HUD Scroll System Driver
+    const linksGrid = document.getElementById('linksGrid');
+    const hudRail = document.getElementById('hudRail');
+    const hudSlider = document.getElementById('hudSlider');
+
+    function syncHudScroll() {
+      const maxScroll = linksGrid.scrollHeight - linksGrid.clientHeight;
+      if (maxScroll <= 0) {
+        hudRail.style.display = 'none';
+        return;
+      }
+      hudRail.style.display = 'flex';
+      const railHeight = hudRail.clientHeight - 28; // padding top & bottom
+      const sliderHeight = Math.max(35, (linksGrid.clientHeight / linksGrid.scrollHeight) * railHeight);
+      hudSlider.style.height = `${sliderHeight}px`;
+
+      const scrollFraction = linksGrid.scrollTop / maxScroll;
+      const topOffset = 14 + (scrollFraction * (railHeight - sliderHeight));
+      hudSlider.style.top = `${topOffset}px`;
+    }
+
+    linksGrid.addEventListener('scroll', syncHudScroll);
+    window.addEventListener('resize', syncHudScroll);
+    setTimeout(syncHudScroll, 100);
+
+    // Click on HUD Rail to Jump
+    hudRail.addEventListener('click', (e) => {
+      if (e.target === hudSlider) return;
+      const rect = hudRail.getBoundingClientRect();
+      const clickY = e.clientY - rect.top - 14;
+      const railAvailable = rect.height - 28 - hudSlider.clientHeight;
+      const pct = Math.max(0, Math.min(1, clickY / railAvailable));
+      const maxScroll = linksGrid.scrollHeight - linksGrid.clientHeight;
+      linksGrid.scrollTo({ top: pct * maxScroll, behavior: 'smooth' });
+    });
+
+    // Drag HUD Slider
+    let isDragging = false;
+    let startY = 0;
+    let startScrollTop = 0;
+
+    hudSlider.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startY = e.clientY;
+      startScrollTop = linksGrid.scrollTop;
+      hudSlider.classList.add('active');
+      document.body.style.userSelect = 'none';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const deltaY = e.clientY - startY;
+      const railAvailable = hudRail.clientHeight - 28 - hudSlider.clientHeight;
+      const maxScroll = linksGrid.scrollHeight - linksGrid.clientHeight;
+      const scrollDelta = (deltaY / railAvailable) * maxScroll;
+      linksGrid.scrollTop = startScrollTop + scrollDelta;
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        hudSlider.classList.remove('active');
+        document.body.style.userSelect = '';
+      }
+    });
 
     // 3D Card Tilt Effect
     const container = document.getElementById('tiltContainer');
