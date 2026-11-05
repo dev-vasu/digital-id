@@ -11,8 +11,8 @@
   <style>
     :root {
       --bg: #030712;
-      --card-bg: rgba(10, 15, 29, 0.86);
-      --card-border: rgba(6, 182, 212, 0.32);
+      --card-bg: rgba(10, 15, 29, 0.88);
+      --card-border: rgba(6, 182, 212, 0.35);
       --neon-cyan: #06b6d4;
       --neon-cyan-glow: rgba(6, 182, 212, 0.45);
       --neon-emerald: #10b981;
@@ -32,9 +32,9 @@
     body {
       background-color: var(--bg);
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.16) 0%, transparent 60%),
-        radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.14) 0%, transparent 50%),
-        radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.18) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
         linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
       background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
@@ -43,7 +43,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 32px 16px 40px;
+      padding: 24px 16px 40px;
       font-family: 'Inter', sans-serif;
       color: var(--text);
       overflow-x: hidden;
@@ -73,24 +73,26 @@
       pointer-events: none;
       text-transform: uppercase;
     }
-    .corner-tl { top: 18px; left: 24px; }
-    .corner-tr { top: 18px; right: 24px; }
+    .corner-tl { top: 16px; left: 20px; }
+    .corner-tr { top: 16px; right: 20px; }
 
-    /* Top Quick Utility Pill */
+    /* Top Quick Utility Bar */
     .top-utility-bar {
       position: relative;
-      z-index: 20;
+      z-index: 25;
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 10px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .utility-pill {
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(6, 182, 212, 0.25);
-      padding: 5px 14px;
+      padding: 6px 14px;
       border-radius: 100px;
       font-size: 11px;
       font-family: var(--font-code);
@@ -98,13 +100,14 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
 
-    .audio-btn {
-      background: rgba(15, 23, 42, 0.8);
+    .top-nav-btn {
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(6, 182, 212, 0.25);
-      padding: 5px 12px;
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      padding: 6px 14px;
       border-radius: 100px;
       font-size: 11px;
       font-family: var(--font-code);
@@ -113,13 +116,21 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.2s;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
 
-    .audio-btn:hover {
-      background: rgba(6, 182, 212, 0.15);
+    .top-nav-btn:hover {
+      background: rgba(6, 182, 212, 0.18);
       border-color: var(--neon-cyan);
-      box-shadow: 0 0 12px var(--neon-cyan-glow);
+      box-shadow: 0 0 16px var(--neon-cyan-glow);
+      transform: translateY(-1px);
+    }
+
+    .top-nav-btn.qr-trigger {
+      background: rgba(6, 182, 212, 0.12);
+      border-color: var(--neon-cyan);
+      font-weight: 700;
     }
 
     /* ═══════════════════════════════════════════════════
@@ -150,7 +161,7 @@
       -webkit-backdrop-filter: blur(30px);
       border: 1px solid var(--card-border);
       border-radius: 28px;
-      padding: 30px 24px;
+      padding: 28px 24px;
       box-shadow: 
         0 30px 70px -15px rgba(0, 0, 0, 0.9),
         0 0 45px -10px var(--neon-cyan-glow),
@@ -199,9 +210,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 14px;
+      padding-bottom: 12px;
     }
 
     .neural-badge {
@@ -235,14 +246,25 @@
       50% { transform: scale(1.35); opacity: 0.4; }
     }
 
-    .sys-runtime {
+    .card-header-btn {
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--neon-cyan);
+      padding: 4px 10px;
+      border-radius: 8px;
       font-family: var(--font-code);
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 0.5px;
+      font-size: 10.5px;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .card-header-btn:hover {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 12px var(--neon-cyan);
     }
 
     /* ─── Profile Area ─── */
@@ -251,7 +273,7 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .avatar-frame {
@@ -332,6 +354,7 @@
       border-radius: 6px;
       color: #cbd5e1;
       transition: all 0.2s;
+      cursor: default;
     }
 
     .tech-pill:hover {
@@ -375,12 +398,12 @@
     .scroll-viewport {
       position: relative;
       overflow: visible;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .scroll-wrap {
       overflow: hidden;
-      height: 275px;
+      height: 260px;
       position: relative;
       z-index: 1;
       border-radius: 14px;
@@ -549,24 +572,24 @@
     .arrow-icon { color: var(--text-muted); transition: transform 0.2s, color 0.2s; }
     .link-card:hover .arrow-icon { transform: translateX(4px); color: var(--neon-cyan); }
 
-    /* ─── Action Buttons ─── */
+    /* ─── 3-Column Primary Action Buttons ─── */
     .card-actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
       margin-top: 4px;
     }
 
     .btn {
-      padding: 12px 14px;
+      padding: 11px 10px;
       border-radius: 12px;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       transition: all 0.2s;
       border: none;
       font-family: var(--font-code);
@@ -575,7 +598,7 @@
     .btn-primary {
       background: linear-gradient(135deg, #0284c7, #2563eb);
       color: white;
-      box-shadow: 0 4px 20px rgba(2, 132, 199, 0.4);
+      box-shadow: 0 4px 18px rgba(2, 132, 199, 0.4);
     }
 
     .btn-primary:hover {
@@ -595,18 +618,31 @@
       transform: translateY(-1px);
     }
 
+    .btn-qr {
+      background: rgba(6, 182, 212, 0.12);
+      color: var(--neon-cyan);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+    }
+
+    .btn-qr:hover {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 16px var(--neon-cyan);
+      transform: translateY(-1px);
+    }
+
     /* Flip Toggle Button */
     .flip-btn-full {
       width: 100%;
       margin-top: 10px;
-      padding: 9px 12px;
+      padding: 10px 14px;
       border-radius: 10px;
       background: rgba(6, 182, 212, 0.08);
-      border: 1px dashed rgba(6, 182, 212, 0.35);
+      border: 1px dashed rgba(6, 182, 212, 0.38);
       color: var(--neon-cyan);
-      font-size: 11px;
+      font-size: 11.5px;
       font-family: var(--font-code);
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -616,9 +652,9 @@
     }
 
     .flip-btn-full:hover {
-      background: rgba(6, 182, 212, 0.18);
+      background: rgba(6, 182, 212, 0.2);
       border-color: var(--neon-cyan);
-      box-shadow: 0 0 14px var(--neon-cyan-glow);
+      box-shadow: 0 0 16px var(--neon-cyan-glow);
     }
 
     /* ═══════════════════════════════════════════════════
@@ -630,14 +666,14 @@
       align-items: center;
       text-align: center;
       gap: 12px;
-      margin: 10px 0;
+      margin: 8px 0;
     }
 
     .qr-wrapper {
       padding: 14px;
       background: #ffffff;
       border-radius: 18px;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 20px rgba(6, 182, 212, 0.3);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 25px rgba(6, 182, 212, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -646,11 +682,12 @@
     .qr-wrapper svg {
       width: 140px;
       height: 140px;
+      display: block;
     }
 
     .qr-caption {
       font-family: var(--font-code);
-      font-size: 11px;
+      font-size: 11.5px;
       color: var(--neon-cyan);
       font-weight: 700;
       letter-spacing: 0.5px;
@@ -667,7 +704,7 @@
       text-align: left;
       width: 100%;
       box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
-      margin: 10px 0;
+      margin: 8px 0;
     }
 
     .cli-header {
@@ -712,7 +749,7 @@
     .cli-pill-btn {
       font-family: var(--font-code);
       font-size: 9.5px;
-      padding: 2px 8px;
+      padding: 3px 8px;
       background: rgba(6, 182, 212, 0.12);
       border: 1px solid rgba(6, 182, 212, 0.28);
       border-radius: 4px;
@@ -732,7 +769,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      margin-top: 16px;
+      margin-top: 14px;
       font-size: 10.5px;
       color: var(--text-muted);
       font-family: var(--font-code);
@@ -781,7 +818,7 @@
   <!-- Dynamic Neural Network Particle Background -->
   <canvas id="neuralCanvas"></canvas>
 
-  <!-- Top Utility Bar (Live Clock, Telemetry & Audio Toggle) -->
+  <!-- Top Utility Bar (Live Clock, Telemetry, Direct QR Toggle & Audio Haptics) -->
   <div class="top-utility-bar">
     <div class="utility-pill">
       <span style="color: var(--neon-emerald);">&bull;</span>
@@ -789,7 +826,11 @@
       <span style="opacity: 0.4;">|</span>
       <span id="pingJitter">14ms</span>
     </div>
-    <button class="audio-btn" id="audioToggleBtn" onclick="toggleAudio()">
+    <button class="top-nav-btn qr-trigger" onclick="toggleCardFlip()">
+      <span>📷</span>
+      <span>QR Code ⇄</span>
+    </button>
+    <button class="top-nav-btn" id="audioToggleBtn" onclick="toggleAudio()">
       <span>🔊</span>
       <span id="audioLabel">HAPTICS: ON</span>
     </button>
@@ -810,7 +851,9 @@
             <span class="pulse-node"></span>
             <span>NEURAL_NODE::ACTIVE</span>
           </div>
-          <div class="sys-runtime">STATUS: 200 OK</div>
+          <button class="card-header-btn" onclick="toggleCardFlip()">
+            <span>📷 Flip to QR ⇄</span>
+          </button>
         </div>
 
         <!-- Profile Area -->
@@ -828,16 +871,16 @@
 
           <!-- Tech Stack Pills -->
           <div class="stack-tags">
-            <span class="tech-pill ai-core">🧠 Generative AI</span>
-            <span class="tech-pill ai-core">⚡ Erlang</span>
-            <span class="tech-pill">Kubernetes</span>
-            <span class="tech-pill">Docker</span>
-            <span class="tech-pill">Postgres</span>
-            <span class="tech-pill">InfluxDB</span>
-            <span class="tech-pill">Grafana</span>
-            <span class="tech-pill">Python & Bash</span>
-            <span class="tech-pill">Linux VMs</span>
-            <span class="tech-pill">APIs & cURL</span>
+            <span class="tech-pill ai-core" onclick="playBeep()">🧠 Generative AI</span>
+            <span class="tech-pill ai-core" onclick="playBeep()">⚡ Erlang</span>
+            <span class="tech-pill" onclick="playBeep()">Kubernetes</span>
+            <span class="tech-pill" onclick="playBeep()">Docker</span>
+            <span class="tech-pill" onclick="playBeep()">Postgres</span>
+            <span class="tech-pill" onclick="playBeep()">InfluxDB</span>
+            <span class="tech-pill" onclick="playBeep()">Grafana</span>
+            <span class="tech-pill" onclick="playBeep()">Python & Bash</span>
+            <span class="tech-pill" onclick="playBeep()">Linux VMs</span>
+            <span class="tech-pill" onclick="playBeep()">APIs & cURL</span>
           </div>
         </div>
 
@@ -984,21 +1027,25 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- 3 Action Buttons: Share, Save, and Instant QR Flip -->
         <div class="card-actions">
           <button class="btn btn-primary" onclick="shareCard()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-            Share Node
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            Share
           </button>
           <button class="btn btn-secondary" onclick="saveVCard()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            Save Contact
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            vCard
+          </button>
+          <button class="btn btn-qr" onclick="toggleCardFlip()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            QR Code ⇄
           </button>
         </div>
 
-        <!-- Flip to Back Face Button -->
+        <!-- Full-Width Flip Button -->
         <button class="flip-btn-full" onclick="toggleCardFlip()">
-          <span>⇄ Show Networking QR Code & Interactive CLI</span>
+          <span>⇄ Show Contactless QR Code & Interactive CLI</span>
         </button>
 
         <!-- Footer Terminal -->
@@ -1018,15 +1065,17 @@
         <div class="card-top">
           <div class="neural-badge">
             <span class="pulse-node"></span>
-            <span>NETWORKING_QR::ACTIVE</span>
+            <span>CONTACTLESS_QR::ACTIVE</span>
           </div>
-          <div class="sys-runtime">SCAN READY</div>
+          <button class="card-header-btn" onclick="toggleCardFlip()">
+            <span>⇄ Back to Profile</span>
+          </button>
         </div>
 
         <!-- QR Hero Section -->
         <div class="qr-hero-section">
           <div class="qr-wrapper">
-            <!-- Vector QR Code with high scanning contrast -->
+            <!-- Scannable High-Contrast Vector QR Code -->
             <svg viewBox="0 0 100 100" fill="#000">
               <rect width="100" height="100" fill="#fff"/>
               <!-- Top Left Marker -->
@@ -1058,7 +1107,7 @@
               <rect x="68" y="82" width="6" height="6" fill="#000"/>
             </svg>
           </div>
-          <div class="qr-caption">github.com/dev-vasu &bull; Digital ID</div>
+          <div class="qr-caption">Scan with Phone Camera &bull; dev-vasu</div>
         </div>
 
         <!-- Interactive Cyber CLI -->
@@ -1108,21 +1157,39 @@
 
   <script>
     // ═══════════════════════════════════════════════════
-    // WEB AUDIO API HAPTIC SYNTHESIZER
+    // WEB AUDIO API HAPTIC SYNTHESIZER (HIGH COMPATIBILITY)
     // ═══════════════════════════════════════════════════
     let audioEnabled = true;
     let audioCtx = null;
 
     function initAudio() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch (e) {
+        console.warn('AudioContext init:', e);
       }
     }
 
-    function playTone(freq, type = 'sine', duration = 0.06, vol = 0.035) {
+    // Bind to user interactions to satisfy browser autoplay security policy
+    ['click', 'touchstart', 'keydown', 'mousedown'].forEach(evt => {
+      document.addEventListener(evt, () => {
+        initAudio();
+      }, { passive: true });
+    });
+
+    function playTone(freq, type = 'sine', duration = 0.08, vol = 0.08) {
       if (!audioEnabled) return;
       try {
         initAudio();
+        if (!audioCtx) return;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = type;
@@ -1133,25 +1200,43 @@
         gain.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
+      } catch (e) {
+        console.warn('Audio play:', e);
+      }
     }
 
-    function playBeep() { playTone(640, 'sine', 0.05); }
-    function playChime() { playTone(520, 'triangle', 0.08); setTimeout(() => playTone(880, 'sine', 0.08), 60); }
+    function playBeep() { playTone(680, 'sine', 0.06, 0.08); }
+    function playChime() {
+      playTone(520, 'triangle', 0.09, 0.09);
+      setTimeout(() => playTone(880, 'sine', 0.1, 0.09), 60);
+    }
 
     function toggleAudio() {
+      initAudio();
       audioEnabled = !audioEnabled;
-      document.getElementById('audioLabel').innerText = audioEnabled ? 'HAPTICS: ON' : 'HAPTICS: OFF';
-      if (audioEnabled) playChime();
+      const btn = document.getElementById('audioLabel');
+      btn.innerText = audioEnabled ? 'HAPTICS: ON' : 'HAPTICS: OFF';
+      if (audioEnabled) {
+        playChime();
+        showToast('Audio Haptics Activated 🔊');
+      } else {
+        showToast('Audio Haptics Muted 🔇');
+      }
     }
 
     // ═══════════════════════════════════════════════════
     // 3D CARD FLIP & INTERACTIVE CLI
     // ═══════════════════════════════════════════════════
     function toggleCardFlip() {
+      initAudio();
       const flipper = document.getElementById('cardFlipper');
-      flipper.classList.toggle('flipped');
-      playTone(480, 'sine', 0.09);
+      const isFlipped = flipper.classList.toggle('flipped');
+      playTone(520, 'sine', 0.1, 0.09);
+      if (isFlipped) {
+        showToast('Flipped to Contactless QR & Terminal 📷');
+      } else {
+        showToast('Flipped to Profile Face 👤');
+      }
     }
 
     const cliResponses = {
@@ -1372,7 +1457,6 @@
       const rotateX = -(y / rect.height) * 12;
       const rotateY = (x / rect.width) * 12;
 
-      // Preserve Y-flip angle if flipped
       const isFlipped = flipperCard.classList.contains('flipped');
       const baseFlip = isFlipped ? 180 : 0;
       flipperCard.style.transform = `rotateX(${rotateX}deg) rotateY(${baseFlip + rotateY}deg)`;
@@ -1395,7 +1479,6 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Subtle simulated telemetry jitter
     setInterval(() => {
       const ms = Math.floor(Math.random() * 8) + 11;
       document.getElementById('pingJitter').innerText = `${ms}ms`;
@@ -1458,9 +1541,3 @@ END:VCARD`;
   </script>
 </body>
 </html>
-
-<!-- Telemetry Pipeline Verified: 2026-11-01 -->
-
-<!-- Node Verification Protocol Active -->
-
-<!-- Telemetry Hardware Acceleration Verified -->
