@@ -665,32 +665,78 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 12px;
-      margin: 8px 0;
+      gap: 8px;
+      margin: 4px 0 8px;
     }
 
     .qr-wrapper {
-      padding: 14px;
+      padding: 10px;
       background: #ffffff;
-      border-radius: 18px;
+      border-radius: 16px;
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 25px rgba(6, 182, 212, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 164px;
+      height: 164px;
     }
 
-    .qr-wrapper svg {
-      width: 140px;
-      height: 140px;
+    .qr-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      image-rendering: pixelated;
       display: block;
+      border-radius: 4px;
+    }
+
+    .qr-toggle-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .qr-mode-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #94a3b8;
+      font-size: 10px;
+      font-family: var(--font-code);
+      padding: 4px 10px;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .qr-mode-btn.active {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-weight: 700;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
     }
 
     .qr-caption {
       font-family: var(--font-code);
-      font-size: 11.5px;
+      font-size: 11px;
+      color: #cbd5e1;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .qr-direct-link {
+      font-family: var(--font-code);
+      font-size: 10px;
       color: var(--neon-cyan);
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      text-decoration: none;
+      opacity: 0.85;
+      transition: opacity 0.2s;
+    }
+
+    .qr-direct-link:hover {
+      opacity: 1;
+      text-decoration: underline;
     }
 
     /* Interactive Cyber CLI Terminal */
@@ -1072,42 +1118,17 @@
           </button>
         </div>
 
-        <!-- QR Hero Section -->
+        <!-- QR Hero Section (100% Valid Scannable QR Codes) -->
         <div class="qr-hero-section">
           <div class="qr-wrapper">
-            <!-- Scannable High-Contrast Vector QR Code -->
-            <svg viewBox="0 0 100 100" fill="#000">
-              <rect width="100" height="100" fill="#fff"/>
-              <!-- Top Left Marker -->
-              <rect x="8" y="8" width="30" height="30" rx="3" fill="#000"/>
-              <rect x="13" y="13" width="20" height="20" rx="2" fill="#fff"/>
-              <rect x="17" y="17" width="12" height="12" fill="#000"/>
-              <!-- Top Right Marker -->
-              <rect x="62" y="8" width="30" height="30" rx="3" fill="#000"/>
-              <rect x="67" y="13" width="20" height="20" rx="2" fill="#fff"/>
-              <rect x="71" y="17" width="12" height="12" fill="#000"/>
-              <!-- Bottom Left Marker -->
-              <rect x="8" y="62" width="30" height="30" rx="3" fill="#000"/>
-              <rect x="13" y="67" width="20" height="20" rx="2" fill="#fff"/>
-              <rect x="17" y="71" width="12" height="12" fill="#000"/>
-              <!-- QR Data Matrix Cells -->
-              <rect x="42" y="10" width="6" height="6" fill="#000"/>
-              <rect x="52" y="16" width="6" height="6" fill="#000"/>
-              <rect x="42" y="26" width="8" height="8" fill="#000"/>
-              <rect x="10" y="44" width="6" height="6" fill="#000"/>
-              <rect x="22" y="48" width="8" height="8" fill="#000"/>
-              <rect x="36" y="42" width="6" height="6" fill="#000"/>
-              <rect x="48" y="46" width="10" height="10" fill="#000"/>
-              <rect x="64" y="44" width="8" height="8" fill="#000"/>
-              <rect x="82" y="48" width="6" height="6" fill="#000"/>
-              <rect x="44" y="66" width="6" height="6" fill="#000"/>
-              <rect x="54" y="74" width="8" height="8" fill="#000"/>
-              <rect x="68" y="66" width="6" height="6" fill="#000"/>
-              <rect x="80" y="78" width="8" height="8" fill="#000"/>
-              <rect x="68" y="82" width="6" height="6" fill="#000"/>
-            </svg>
+            <img id="qrImage" src="qr_code.png" alt="Scan QR Code to open Digital ID" />
           </div>
-          <div class="qr-caption">Scan with Phone Camera &bull; dev-vasu</div>
+          <div class="qr-toggle-pills">
+            <button class="qr-mode-btn active" id="qrBtnUrl" onclick="switchQR('url')">🔗 Digital ID Link</button>
+            <button class="qr-mode-btn" id="qrBtnVCard" onclick="switchQR('vcard')">📇 Contact vCard</button>
+          </div>
+          <div class="qr-caption" id="qrCaptionText">Point Phone Camera to Open Digital ID</div>
+          <a href="https://dev-vasu.github.io/digital-id/" target="_blank" class="qr-direct-link" id="qrDirectLink">dev-vasu.github.io/digital-id ↗</a>
         </div>
 
         <!-- Interactive Cyber CLI -->
@@ -1236,6 +1257,31 @@
         showToast('Flipped to Contactless QR & Terminal 📷');
       } else {
         showToast('Flipped to Profile Face 👤');
+      }
+    }
+
+    function switchQR(type) {
+      playBeep();
+      const img = document.getElementById('qrImage');
+      const caption = document.getElementById('qrCaptionText');
+      const directLink = document.getElementById('qrDirectLink');
+      const btnUrl = document.getElementById('qrBtnUrl');
+      const btnVCard = document.getElementById('qrBtnVCard');
+
+      if (type === 'vcard') {
+        img.src = 'qr_vcard.png';
+        caption.innerText = 'Point Phone Camera to Save Contact to Phonebook';
+        directLink.style.display = 'none';
+        btnVCard.classList.add('active');
+        btnUrl.classList.remove('active');
+        showToast('Switched to vCard Contact QR 📇');
+      } else {
+        img.src = 'qr_code.png';
+        caption.innerText = 'Point Phone Camera to Open Digital ID';
+        directLink.style.display = 'inline';
+        btnUrl.classList.add('active');
+        btnVCard.classList.remove('active');
+        showToast('Switched to Digital ID URL QR 🔗');
       }
     }
 
